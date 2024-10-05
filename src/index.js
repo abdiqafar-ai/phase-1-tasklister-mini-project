@@ -44,7 +44,7 @@ function addTask() {
   taskInput.value = '';
 }
 
-/
+
 function editTask(taskText) {
   const newDescription = prompt("Edit task description:", taskText.textContent);
   if (newDescription) {
