@@ -36,19 +36,16 @@ button {
   box-shadow: 2px 5px 5px #333;
 }
 
+
 li {
   margin: 5px 0;
 }
-
-.low {
-  color: green;
+.high { 
+  color: red; 
 }
-
 .medium {
-  color: yellow;
-}
-
-.high {
-  color: red;
-}
-
+   color: orange; 
+  }
+.low {
+   color: green; 
+  }
