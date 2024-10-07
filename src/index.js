@@ -1,79 +1,83 @@
 document.addEventListener("DOMContentLoaded", () => {
   const taskForm = document.getElementById("create-task-form");
   const taskList = document.getElementById("tasks");
-  const sortButton = document.getElementById("sort-tasks");
-  let tasks = [];
 
-  taskForm.addEventListener("submit", (event) => {
+  taskForm.addEventListener("submit", function(event) {
     event.preventDefault();
-    
     const taskDescription = document.getElementById("new-task-description").value;
-    const user = document.getElementById("user").value;
-    const duration = document.getElementById("duration").value;
-    const dueDate = document.getElementById("due-date").value;
     const priority = document.getElementById("priority").value;
-
-    const newTask = {
-      description: taskDescription,
-      user: user,
-      duration: duration,
-      dueDate: dueDate,
-      priority: priority,
-    };
-
-    tasks.push(newTask);
-    renderTasks();
+    const newTask = createTask(taskDescription, priority);
+    taskList.appendChild(newTask);
     taskForm.reset();
   });
 
-  function renderTasks() {
-    taskList.innerHTML = '';
-    tasks.forEach((task, index) => {
-      const li = document.createElement("li");
-      li.textContent = `${task.description} (User: ${task.user}, Duration: ${task.duration}, Due: ${task.dueDate})`;
-      li.style.color = getColorByPriority(task.priority);
-      
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Delete";
-      deleteButton.onclick = () => {
-        tasks.splice(index, 1);
-        renderTasks();
-      };
+  function createTask(description, priority) {
+    const li = document.createElement("li");
+    li.textContent = description;
+    li.className = priority; 
 
-      const editButton = document.createElement("button");
-      editButton.textContent = "Edit";
-      editButton.onclick = () => editTask(index);
+    
+    switch (priority) {
+      case 'high':
+        li.style.color = 'red';
+        break;
+      case 'medium':
+        li.style.color = 'yellow';
+        break;
+      case 'low':
+        li.style.color = 'green';
+        break;
+    }
 
-      li.appendChild(deleteButton);
-      li.appendChild(editButton);
-      taskList.appendChild(li);
-    });
+   
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.addEventListener("click", () => editTask(li));
+    li.appendChild(editButton);
+
+    
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => li.remove());
+    li.appendChild(deleteButton);
+
+    return li;
   }
 
-  function getColorByPriority(priority) {
-    switch (priority) {
-      case "high": return "red";
-      case "medium": return "yellow";
-      case "low": return "green";  
+  function editTask(taskItem) {
+    const newDescription = prompt("Edit your task:", taskItem.firstChild.textContent);
+    if (newDescription) {
+      taskItem.firstChild.textContent = newDescription; // Update task description
     }
   }
 
-  sortButton.addEventListener("click", () => {
-    tasks.sort((a, b) => {
-      return a.priority.localeCompare(b.priority);
+  
+  const sortButton = document.createElement("button");
+  sortButton.textContent = "Sort Tasks by Priority";
+  sortButton.addEventListener("click", sortTasks);
+  document.getElementById("main-content").appendChild(sortButton);
+
+  function sortTasks() {
+    const tasksArray = Array.from(taskList.children);
+    tasksArray.sort((a, b) => {
+      const priorityA = getPriorityValue(a.className);
+      const priorityB = getPriorityValue(b.className);
+      return priorityA - priorityB;
     });
-    renderTasks();
-  });
+    taskList.innerHTML = ''; 
+    tasksArray.forEach(task => taskList.appendChild(task)); 
+  }
 
-  function editTask(index) {
-    const task = tasks[index];
-    document.getElementById("new-task-description").value = task.description;
-    document.getElementById("user").value = task.user;
-    document.getElementById("duration").value = task.duration;
-    document.getElementById("due-date").value = task.dueDate;
-    document.getElementById("priority").value = task.priority;
-
-    tasks.splice(index, 1);
-    renderTasks();
+  function getPriorityValue(priority) {
+    switch (priority) {
+      case 'high':
+        return 3;
+      case 'medium':
+        return 2;
+      case 'low':
+        return 1;
+      default:
+        return 0;
+    }
   }
 });
